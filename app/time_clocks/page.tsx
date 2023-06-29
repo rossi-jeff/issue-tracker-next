@@ -10,6 +10,7 @@ import { IssueType } from "@/types/issue.type";
 import { UserType } from "@/types/user.type";
 import { ProjectType } from "@/types/project.type";
 import TimeClockFilter from "./time-clock-filter";
+import PaginationControls from "../pagination-controls";
 
 export default function TimeClocksPage() {
   const [limit, setLimit] = useState(10);
@@ -39,6 +40,16 @@ export default function TimeClocksPage() {
   issues = issueReq.data;
   users = userReq.data;
   projects = projectReq.data;
+
+  const pageChanged = (newPage: number) => {
+    setOffset((newPage - 1) * limit);
+  };
+
+  const limitChanged = (newLimit: number) => {
+    setLimit(newLimit);
+    setOffset(0);
+  };
+
   return (
     <div>
       <h1>Time Clocks</h1>
@@ -46,6 +57,13 @@ export default function TimeClocksPage() {
       {timeClocks.slice(offset, offset + limit).map((timeClock) => (
         <TimeClockCard key={timeClock.Id} timeClock={timeClock} />
       ))}
+      <PaginationControls
+        offset={offset}
+        limit={limit}
+        count={timeClocks.length}
+        pageChanged={pageChanged}
+        limitChanged={limitChanged}
+      />
     </div>
   );
 }

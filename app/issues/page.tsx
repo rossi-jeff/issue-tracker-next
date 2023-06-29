@@ -8,6 +8,7 @@ import IssueCard from "./issue-card";
 import { useState } from "react";
 import { UserType } from "@/types/user.type";
 import IssueFilter from "./issue-filter";
+import PaginationControls from "../pagination-controls";
 
 export default function IssuesPage() {
   const [limit, setLimit] = useState(10);
@@ -25,6 +26,15 @@ export default function IssuesPage() {
   issues = issueReq.data;
   users = userReq.data;
 
+  const pageChanged = (newPage: number) => {
+    setOffset((newPage - 1) * limit);
+  };
+
+  const limitChanged = (newLimit: number) => {
+    setLimit(newLimit);
+    setOffset(0);
+  };
+
   return (
     <div>
       <h1>Issues</h1>
@@ -32,6 +42,13 @@ export default function IssuesPage() {
       {issues.slice(offset, offset + limit).map((issue) => (
         <IssueCard key={issue.Id} issue={issue} />
       ))}
+      <PaginationControls
+        limit={limit}
+        offset={offset}
+        count={issues.length}
+        pageChanged={pageChanged}
+        limitChanged={limitChanged}
+      />
     </div>
   );
 }

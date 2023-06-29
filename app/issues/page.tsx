@@ -5,21 +5,30 @@ import { apiUrl } from "../../lib/api-url";
 import { fetcher } from "../../lib/fetcher";
 import { IssueType } from "@/types/issue.type";
 import IssueCard from "./issue-card";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { UserType } from "@/types/user.type";
+import IssueFilter from "./issue-filter";
 
 export default function IssuesPage() {
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
 
-  const { data, error, isLoading } = useSWR(`${apiUrl}/issue`, fetcher);
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  let issues: IssueType[] = [];
+  let users: UserType[] = [];
 
-  const issues: IssueType[] = data;
+  const issueReq = useSWR(`${apiUrl}/issue`, fetcher);
+  const userReq = useSWR(`${apiUrl}/user`, fetcher);
+
+  if (issueReq.isLoading || userReq.isLoading) return <div>Loading...</div>;
+  if (issueReq.error || userReq.error) return <div>Error</div>;
+
+  issues = issueReq.data;
+  users = userReq.data;
 
   return (
     <div>
       <h1>Issues</h1>
+      <IssueFilter users={users} />
       {issues.slice(offset, offset + limit).map((issue) => (
         <IssueCard key={issue.Id} issue={issue} />
       ))}

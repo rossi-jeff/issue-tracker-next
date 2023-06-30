@@ -11,8 +11,15 @@ import IssueFilter from './issue-filter'
 import PaginationControls from '../pagination-controls'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSwrWithQuery } from '../../lib/use-swr-with-query'
+import {
+	UserSessionType,
+	sessionKey,
+	useSessionStorage,
+} from '../../lib/session.storage'
 
 export default function IssuesPage() {
+	const { getItem } = useSessionStorage()
+	const [session] = useState<UserSessionType>(getItem(sessionKey, 'session'))
 	const [limit, setLimit] = useState(10)
 	const [offset, setOffset] = useState(0)
 	const router = useRouter()

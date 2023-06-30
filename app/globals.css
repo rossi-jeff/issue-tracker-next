@@ -3,61 +3,71 @@
 @tailwind utilities;
 
 h1 {
-	@apply font-extrabold text-2xl mb-2;
+  @apply font-extrabold text-2xl mb-2;
 }
 
 h2 {
-	@apply font-bold text-xl mb-2;
+  @apply font-bold text-xl mb-2;
 }
 
 h3 {
-	@apply font-bold text-lg mb-2;
+  @apply font-bold text-lg mb-2;
+}
+
+input,
+select,
+textarea {
+  @apply px-2 py-1 border border-black text-sm rounded;
+}
+
+label {
+  @apply font-bold;
 }
 
 .card {
-	@apply border border-black rounded p-2 mb-2;
+  @apply border border-black rounded p-2 mb-2;
 }
 
 .dashboard-column {
-	@apply max-h-96 overflow-y-auto;
+  @apply max-h-96 overflow-y-auto;
 }
 
 .dashboard-issue-content,
 .dashboard-issue-description,
 .dashboard-issue-details,
 .filter-content {
-	@apply m-2 transition hidden;
+  @apply m-2 transition hidden;
 }
 
 .dashboard-issue-content.open,
 .dashboard-issue-description.open,
 .dashboard-issue-details.open,
 .filter-content.open {
-	@apply block;
+  @apply block;
 }
 
 .dashboard-column .card button {
-	@apply block w-full bg-slate-200 font-bold text-left px-2 py-1;
+  @apply block w-full bg-slate-200 font-bold text-left px-2 py-1;
 }
 
 .dashboard-column .card .dashboard-issue-content button {
-	@apply mt-2;
+  @apply mt-2;
 }
 
 #issue-filter label,
 #time-clock-filter label {
-	@apply font-bold block;
+  @apply font-bold block;
 }
 
 .modal-overlay {
-	@apply fixed inset-0 bg-slate-500 bg-opacity-70 overflow-y-auto w-full h-full hidden;
+  @apply fixed inset-0 bg-slate-500 bg-opacity-70 overflow-y-auto w-full h-full hidden;
 }
 
 .modal-fit {
-	@apply max-w-fit border bg-white border-black p-2 mx-auto hidden relative top-24;
+  @apply max-w-fit border bg-white border-black p-2 mx-auto hidden relative top-24;
 }
 
 .modal-overlay.open,
 .modal-fit.open {
-	@apply block;
+  @apply block;
 }

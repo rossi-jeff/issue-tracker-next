@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api-url";
 import { getFullName } from "@/lib/get-full-name";
 import {
   ComplexityArray,
@@ -6,11 +7,75 @@ import {
   StatusArray,
 } from "@/types/array.types";
 import { UserType } from "@/types/user.type";
+import { useState } from "react";
 
-export default function IssueFilter({ users }: { users: UserType[] }) {
+export default function IssueFilter({
+  users,
+  filterIssues,
+}: {
+  users: UserType[];
+  filterIssues: Function;
+}) {
+  const [filter, setFilter] = useState<{ [key: string]: string }>({
+    Priority: "",
+    Status: "",
+    Type: "",
+    Complexity: "",
+    AuthorId: "",
+    AssignedToId: "",
+  });
   const toggle = () => {
     const el = document.getElementById("issue-filter-content");
     if (el) el.classList.toggle("open");
+  };
+
+  const selectChanged = (ev: any) => {
+    const { name, selectedIndex } = ev.target;
+    let value;
+    switch (name) {
+      case "Priority":
+        value = selectedIndex > 0 ? PriorityArray[selectedIndex - 1] : "";
+        break;
+      case "Status":
+        value = selectedIndex > 0 ? StatusArray[selectedIndex - 1] : "";
+        break;
+      case "Type":
+        value = selectedIndex > 0 ? IssueTypeArray[selectedIndex - 1] : "";
+        break;
+      case "Complexity":
+        value = selectedIndex > 0 ? ComplexityArray[selectedIndex - 1] : "";
+        break;
+      case "AuthorId":
+      case "AssignedToId":
+        value = selectedIndex > 0 ? users[selectedIndex - 1].Id : "";
+        break;
+    }
+    const update = {
+      ...filter,
+      [name]: value,
+    };
+    setFilter(update);
+    sendIssueFilters(update);
+  };
+
+  const clearFilters = () => {
+    setFilter({
+      Priority: "",
+      Status: "",
+      Type: "",
+      Complexity: "",
+      AuthorId: "",
+      AssignedToId: "",
+    });
+    sendIssueFilters({});
+  };
+
+  const sendIssueFilters = (update: { [key: string]: string }) => {
+    const url = new URL("/issue", apiUrl);
+    for (const key in update) {
+      if (update[key] != "") url.searchParams.append(key, update[key]);
+    }
+    filterIssues(url.href);
   };
   return (
     <div className="card" id="issue-filter">
@@ -19,7 +84,11 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
         <div className="flex flex-wrap justify-between">
           <div>
             <label htmlFor="Priority">Priority</label>
-            <select name="Priority">
+            <select
+              name="Priority"
+              onChange={selectChanged}
+              defaultValue={filter.Priority}
+            >
               <option value="">- select -</option>
               {PriorityArray.map((p, i) => (
                 <option key={i} value={p}>
@@ -30,7 +99,11 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
           </div>
           <div>
             <label htmlFor="Status">Status</label>
-            <select name="Status">
+            <select
+              name="Status"
+              onChange={selectChanged}
+              defaultValue={filter.Status}
+            >
               <option value="">- select -</option>
               {StatusArray.map((s, i) => (
                 <option key={i} value={s}>
@@ -41,7 +114,11 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
           </div>
           <div>
             <label htmlFor="Type">Type</label>
-            <select name="Type">
+            <select
+              name="Type"
+              onChange={selectChanged}
+              defaultValue={filter.Type}
+            >
               <option value="">- select -</option>
               {IssueTypeArray.map((t, i) => (
                 <option key={i} value={t}>
@@ -52,7 +129,11 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
           </div>
           <div>
             <label htmlFor="Complexity">Complexity</label>
-            <select name="Complexity">
+            <select
+              name="Complexity"
+              onChange={selectChanged}
+              defaultValue={filter.Complexity}
+            >
               <option value="">- select -</option>
               {ComplexityArray.map((c, i) => (
                 <option key={i} value={c}>
@@ -62,8 +143,12 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
             </select>
           </div>
           <div>
-            <label htmlFor="Author">Author</label>
-            <select name="Author">
+            <label htmlFor="AuthorId">Author</label>
+            <select
+              name="AuthorId"
+              onChange={selectChanged}
+              defaultValue={filter.AuthorId}
+            >
               <option value="">- select -</option>
               {users.map((u) => (
                 <option key={u.UUID} value={u.Id}>
@@ -73,9 +158,13 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
             </select>
           </div>
           <div>
-            <label htmlFor="Assigned">Assigned To</label>
-            <select name="Assigned">
-              <option value="Assigned">- select -</option>
+            <label htmlFor="AssignedToId">Assigned To</label>
+            <select
+              name="AssignedToId"
+              onChange={selectChanged}
+              defaultValue={filter.AssignedToId}
+            >
+              <option value="">- select -</option>
               {users.map((u) => (
                 <option key={u.UUID} value={u.Id}>
                   {getFullName(u)}
@@ -85,7 +174,7 @@ export default function IssueFilter({ users }: { users: UserType[] }) {
           </div>
           <div>
             <label>&nbsp;</label>
-            <button>Clear Filters</button>
+            <button onClick={clearFilters}>Clear Filters</button>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ import PaginationControls from "../pagination-controls";
 export default function IssuesPage() {
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
+  const [rendered, setRendered] = useState(true);
 
   let issues: IssueType[] = [];
   let users: UserType[] = [];
@@ -35,20 +36,33 @@ export default function IssuesPage() {
     setOffset(0);
   };
 
+  const filterIssues = async (url: string) => {
+    const result = await fetch(url);
+    if (result.ok) {
+      setRendered(false);
+      issues = await result.json();
+      setOffset(0);
+      setRendered(true);
+    }
+  };
+
   return (
     <div>
       <h1>Issues</h1>
-      <IssueFilter users={users} />
-      {issues.slice(offset, offset + limit).map((issue) => (
-        <IssueCard key={issue.Id} issue={issue} />
-      ))}
-      <PaginationControls
-        limit={limit}
-        offset={offset}
-        count={issues.length}
-        pageChanged={pageChanged}
-        limitChanged={limitChanged}
-      />
+      <IssueFilter users={users} filterIssues={filterIssues} />
+      {rendered &&
+        issues
+          .slice(offset, offset + limit)
+          .map((issue) => <IssueCard key={issue.Id} issue={issue} />)}
+      {rendered && (
+        <PaginationControls
+          limit={limit}
+          offset={offset}
+          count={issues.length}
+          pageChanged={pageChanged}
+          limitChanged={limitChanged}
+        />
+      )}
     </div>
   );
 }

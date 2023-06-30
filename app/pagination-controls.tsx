@@ -84,9 +84,13 @@ export default function PaginationControls({
         </div>
         <div>
           <label htmlFor="PerPage">Per Page</label>
-          <select name="PerPage" onChange={perPageSelectChanged}>
+          <select
+            name="PerPage"
+            onChange={perPageSelectChanged}
+            defaultValue={current.perPage}
+          >
             {perPageOptions.map((p) => (
-              <option key={p} value={p} selected={p == current.perPage}>
+              <option key={p} value={p}>
                 {p}
               </option>
             ))}
@@ -98,9 +102,13 @@ export default function PaginationControls({
         </div>
         <div>
           <label htmlFor="Page">Page</label>
-          <select name="Page" onChange={pageSelectChanged}>
+          <select
+            name="Page"
+            onChange={pageSelectChanged}
+            defaultValue={current.page}
+          >
             {pages.map((p) => (
-              <option key={p} value={p} selected={p == current.page}>
+              <option key={p} value={p}>
                 {p}
               </option>
             ))}

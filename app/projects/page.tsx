@@ -12,6 +12,7 @@ import {
 	sessionKey,
 	useSessionStorage,
 } from '../../lib/session.storage'
+import Link from 'next/link'
 
 export default function ProjectsPage() {
 	const { getItem } = useSessionStorage()
@@ -36,7 +37,15 @@ export default function ProjectsPage() {
 
 	return (
 		<div>
-			<h1>Projects</h1>
+			<div className="flex flex-wrap">
+				<h1>Projects</h1>
+				{session.signedIn && (
+					<Link href="/projects/new" className="ml-4">
+						New Project
+					</Link>
+				)}
+			</div>
+
 			{projects.slice(offset, offset + limit).map((project) => (
 				<ProjectCard key={project.Id} project={project} />
 			))}

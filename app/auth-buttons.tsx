@@ -21,6 +21,7 @@ export default function AuthButtons() {
 		removeItem(sessionKey, 'session')
 		const item = getItem(sessionKey, 'session')
 		setSession(item)
+		if (window) window.location.reload()
 	}
 
 	const [credentials, setCredentials] = useState<CredentialsType>({

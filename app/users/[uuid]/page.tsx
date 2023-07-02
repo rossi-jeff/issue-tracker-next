@@ -50,6 +50,29 @@ export default function EditUserPage() {
   const deleteEmail = (uuid: string) => {
     console.log(uuid);
   };
+
+  const createPhone = (ev: {
+    Number: string;
+    Type: string;
+    Usage: string;
+    Public: boolean;
+  }) => {
+    console.log(ev);
+  };
+
+  const updatePhone = (ev: {
+    Number: string;
+    Type: string;
+    Usage: string;
+    Public: boolean;
+    UUID: string;
+  }) => {
+    console.log(ev);
+  };
+
+  const deletePhone = (uuid: string) => {
+    console.log(uuid);
+  };
   return (
     <div className="card">
       <h2>Edit User</h2>
@@ -125,7 +148,12 @@ export default function EditUserPage() {
           </div>
         ))}
       </div>
-      <PhoneList phones={user.Phones || []} />
+      <PhoneList
+        phones={user.Phones || []}
+        createPhone={createPhone}
+        updatePhone={updatePhone}
+        deletePhone={deletePhone}
+      />
       <EmailList
         emails={user.Emails || []}
         createEmail={createEmail}

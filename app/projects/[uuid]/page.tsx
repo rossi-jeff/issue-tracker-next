@@ -1,13 +1,23 @@
 "use client";
 
 import { apiUrl } from "@/lib/api-url";
+import { buildHeaders } from "@/lib/build-headers";
 import { fetcher } from "@/lib/fetcher";
+import {
+  UserSessionType,
+  sessionKey,
+  useSessionStorage,
+} from "@/lib/session.storage";
 import { ProjectType } from "@/types/project.type";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import useSWR from "swr";
 
 export default function EditProjectPage() {
   const { uuid } = useParams();
+  const { getItem } = useSessionStorage();
+  const [session] = useState<UserSessionType>(getItem(sessionKey, "session"));
+  const [updated, setUpdated] = useState(false);
   let project: ProjectType = {
     Name: "",
     Details: "",
@@ -18,6 +28,29 @@ export default function EditProjectPage() {
   if (projectReq.error) return <div>Error</div>;
 
   project = projectReq.data;
+
+  const fieldChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    projectReq.mutate({
+      ...project,
+      [name]: value,
+    });
+    setUpdated(true);
+  };
+
+  const updateProject = async () => {
+    const { Name, Details, UUID } = project;
+    const result = await fetch(`${apiUrl}/project/${UUID}`, {
+      method: "PATCH",
+      body: JSON.stringify({ Name, Details }),
+      headers: buildHeaders(session),
+    });
+    if (result.ok) {
+      const data = await result.json();
+      projectReq.mutate(data);
+      setUpdated(false);
+    }
+  };
   return (
     <div className="card">
       <h2>Edit Project</h2>
@@ -31,6 +64,7 @@ export default function EditProjectPage() {
           id="Name"
           className="w-full"
           defaultValue={project.Name}
+          onChange={fieldChanged}
         />
       </div>
       <div>
@@ -42,11 +76,14 @@ export default function EditProjectPage() {
           id="Details"
           defaultValue={project.Details}
           className="w-full h-20"
+          onChange={fieldChanged}
         ></textarea>
       </div>
-      <div>
-        <button>Update Project</button>
-      </div>
+      {updated && (
+        <div>
+          <button onClick={updateProject}>Update Project</button>
+        </div>
+      )}
     </div>
   );
 }

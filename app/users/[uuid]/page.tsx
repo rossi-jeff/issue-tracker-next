@@ -2,15 +2,25 @@
 
 import { apiUrl } from '@/lib/api-url'
 import { fetcher } from '@/lib/fetcher'
-import { UserRoleArray } from '@/types/array.types'
 import { UserType } from '@/types/user.type'
 import { useParams } from 'next/navigation'
 import useSWR from 'swr'
-import PhoneList from '../phone-list'
-import EmailList from '../email-list'
+import UserForm from '../user-form'
+import {
+	UserSessionType,
+	sessionKey,
+	useSessionStorage,
+} from '../../../lib/session.storage'
+import { useState } from 'react'
+import { buildHeaders } from '../../../lib/build-headers'
+import { EmailType } from '../../../types/email.type'
+import { PhoneType } from '../../../types/phone.type'
 
 export default function EditUserPage() {
 	const { uuid } = useParams()
+	const { getItem } = useSessionStorage()
+	const [session] = useState<UserSessionType>(getItem(sessionKey, 'session'))
+	const [updated, setUpdated] = useState(false)
 	let user: UserType = {
 		Credentials: {
 			Username: '',
@@ -30,37 +40,88 @@ export default function EditUserPage() {
 
 	user = userReq.data
 
-	const createEmail = (ev: {
+	const createEmail = async (ev: {
 		Address: string
 		Usage: string
 		Public: boolean
 	}) => {
 		console.log(ev)
+		const { Address, Usage, Public } = ev
+		const { UUID } = user
+		const result = await fetch(`${apiUrl}/user/${UUID}/email`, {
+			method: 'POST',
+			body: JSON.stringify({ Address, Usage, Public }),
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			const email: EmailType = await result.json()
+			if (!user.Emails) user.Emails = []
+			user.Emails.push(email)
+			userReq.mutate(user)
+		}
 	}
 
-	const updateEmail = (ev: {
+	const updateEmail = async (ev: {
 		Address: string
 		Usage: string
 		Public: boolean
 		UUID: string
 	}) => {
 		console.log(ev)
+		const { Address, Usage, Public, UUID } = ev
+		const result = await fetch(`${apiUrl}/email/${UUID}`, {
+			method: 'PATCH',
+			body: JSON.stringify({ Address, Usage, Public }),
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			if (!user.Emails) user.Emails = []
+			const email = await result.json()
+			const idx = user.Emails.findIndex((e) => e.UUID == UUID)
+			if (idx != -1) {
+				user.Emails[idx] = email
+				userReq.mutate(user)
+			}
+		}
 	}
 
-	const deleteEmail = (uuid: string) => {
-		console.log(uuid)
+	const deleteEmail = async (UUID: string) => {
+		console.log(UUID)
+		const result = await fetch(`${apiUrl}/email/${UUID}`, {
+			method: 'DELETE',
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			if (!user.Emails) user.Emails = []
+			const idx = user.Emails.findIndex((e) => e.UUID == UUID)
+			if (idx != -1) user.Emails.splice(idx, 1)
+			userReq.mutate(user)
+		}
 	}
 
-	const createPhone = (ev: {
+	const createPhone = async (ev: {
 		Number: string
 		Type: string
 		Usage: string
 		Public: boolean
 	}) => {
 		console.log(ev)
+		const { Number, Type, Usage, Public } = ev
+		const { UUID } = user
+		const result = await fetch(`${apiUrl}/user/${UUID}/phone`, {
+			method: 'POST',
+			body: JSON.stringify({ Number, Type, Usage, Public }),
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			const phone: PhoneType = await result.json()
+			if (!user.Phones) user.Phones = []
+			user.Phones.push(phone)
+			userReq.mutate(user)
+		}
 	}
 
-	const updatePhone = (ev: {
+	const updatePhone = async (ev: {
 		Number: string
 		Type: string
 		Usage: string
@@ -68,98 +129,74 @@ export default function EditUserPage() {
 		UUID: string
 	}) => {
 		console.log(ev)
+		const { Number, Type, Usage, Public, UUID } = ev
+		const result = await fetch(`${apiUrl}/phone/${UUID}`, {
+			method: 'PATCH',
+			body: JSON.stringify({ Number, Type, Usage, Public }),
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			const phone = await result.json()
+			if (!user.Phones) user.Phones = []
+			const idx = user.Phones.findIndex((p) => p.UUID == UUID)
+			if (idx != -1) user.Phones[idx] = phone
+			userReq.mutate(user)
+		}
 	}
 
-	const deletePhone = (uuid: string) => {
-		console.log(uuid)
+	const deletePhone = async (UUID: string) => {
+		console.log(UUID)
+		const result = await fetch(`${apiUrl}/phone/${UUID}`, {
+			method: 'DELETE',
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			if (!user.Phones) user.Phones = []
+			const idx = user.Phones.findIndex((p) => p.UUID == UUID)
+			if (idx != -1) user.Phones.splice(idx, 1)
+			userReq.mutate(user)
+		}
+	}
+
+	const updateUserAttr = (updates: UserType) => {
+		console.log(updates)
+		const { Name, Credentials, Roles } = updates
+		user.Name = Name
+		user.Credentials = Credentials
+		user.Roles = Roles
+		userReq.mutate(user)
+		setUpdated(true)
+	}
+
+	const updateUser = async () => {
+		const { Name, Credentials, Roles, UUID } = user
+		const result = await fetch(`${apiUrl}/user/${UUID}`, {
+			method: 'PATCH',
+			body: JSON.stringify({ Name, Credentials, Roles }),
+			headers: buildHeaders(session),
+		})
+		if (result.ok) {
+			const updated = await result.json()
+			userReq.mutate(updated)
+			setUpdated(false)
+		}
 	}
 	return (
 		<div className="card">
 			<h2>Edit User</h2>
-			<div className="flex flex-wrap justify-between">
-				<div>
-					<label htmlFor="Username" className="block">
-						Username
-					</label>
-					{user.Credentials && (
-						<input
-							type="text"
-							name="Username"
-							id="Username"
-							defaultValue={user.Credentials.Username}
-						/>
-					)}
-				</div>
-			</div>
-			<div className="flex flex-wrap justify-between">
-				<div>
-					<label htmlFor="First" className="block">
-						First
-					</label>
-					{user.Name && (
-						<input
-							type="text"
-							name="First"
-							id="First"
-							defaultValue={user.Name.First}
-						/>
-					)}
-				</div>
-				<div>
-					<label htmlFor="Middle" className="block">
-						Middle
-					</label>
-					{user.Name && (
-						<input
-							type="text"
-							name="Middle"
-							id="Middle"
-							defaultValue={user.Name.Middle}
-						/>
-					)}
-				</div>
-				<div>
-					<label htmlFor="Last" className="block">
-						Last
-					</label>
-					{user.Name && (
-						<input
-							type="text"
-							name="Last"
-							id="Last"
-							defaultValue={user.Name.Last}
-						/>
-					)}
-				</div>
-			</div>
-			<div className="flex flex-wrap justify-between">
-				{UserRoleArray.map((role, idx) => (
-					<div key={idx}>
-						<input
-							type="checkbox"
-							name="role"
-							id={'role-' + role}
-							value={role}
-							defaultChecked={user.Roles && user.Roles.indexOf(role) > -1}
-						/>
-						<label htmlFor={'role-' + role} className="ml-2">
-							{role}
-						</label>
-					</div>
-				))}
-			</div>
-			<PhoneList
-				phones={user.Phones || []}
-				createPhone={createPhone}
-				updatePhone={updatePhone}
-				deletePhone={deletePhone}
-			/>
-			<EmailList
-				emails={user.Emails || []}
+			<UserForm
+				user={user}
+				showPass={false}
 				createEmail={createEmail}
 				updateEmail={updateEmail}
 				deleteEmail={deleteEmail}
+				createPhone={createPhone}
+				updatePhone={updatePhone}
+				deletePhone={deletePhone}
+				updateUserAttr={updateUserAttr}
 			/>
+			{updated && <button onClick={updateUser}>Update User</button>}
+			<div>{JSON.stringify(user)}</div>
 		</div>
 	)
 }

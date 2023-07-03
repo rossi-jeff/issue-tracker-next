@@ -44,7 +44,6 @@ export default function EmailList({
 				}
 				break
 		}
-		console.log('newFieldChanged', JSON.stringify(update))
 		setEmailNew(update)
 	}
 
@@ -66,7 +65,6 @@ export default function EmailList({
 				}
 				break
 		}
-		console.log('editFieldChanged', JSON.stringify(update))
 		setEmailEdit(update)
 	}
 
@@ -141,7 +139,7 @@ export default function EmailList({
 				</button>
 			</div>
 			{emails.map((email, i) => (
-				<div key={email.Id || i} className="flex flex-wrap justify-between">
+				<div key={email.UUID || i} className="flex flex-wrap justify-between">
 					<div>
 						<button onClick={() => editEmail(email.UUID || '')}>Edit</button>
 					</div>
@@ -164,7 +162,7 @@ export default function EmailList({
 							<input
 								type="email"
 								name="Address"
-								defaultValue={emailNew.Address}
+								value={emailNew.Address}
 								onChange={newFieldChanged}
 							/>
 						</div>
@@ -172,13 +170,9 @@ export default function EmailList({
 							<label htmlFor="Usage" className="block">
 								Usage
 							</label>
-							<select
-								name="Usage"
-								defaultValue={emailNew.Usage}
-								onChange={newFieldChanged}
-							>
+							<select name="Usage" onChange={newFieldChanged}>
 								{UsageArray.map((u, i) => (
-									<option key={i} value={u}>
+									<option key={i} value={u} selected={u == emailNew.Usage}>
 										{u}
 									</option>
 								))}
@@ -188,7 +182,7 @@ export default function EmailList({
 							<input
 								type="checkbox"
 								name="Public"
-								defaultChecked={emailNew.Public}
+								checked={emailNew.Public}
 								onChange={newFieldChanged}
 							/>
 							<label htmlFor="Public" className="ml-2">
@@ -211,7 +205,7 @@ export default function EmailList({
 							<input
 								type="email"
 								name="Address"
-								defaultValue={emailEdit.Address}
+								value={emailEdit.Address}
 								onChange={editFieldChanged}
 							/>
 						</div>
@@ -219,13 +213,9 @@ export default function EmailList({
 							<label htmlFor="Usage" className="block">
 								Usage
 							</label>
-							<select
-								name="Usage"
-								defaultValue={emailEdit.Usage}
-								onChange={editFieldChanged}
-							>
+							<select name="Usage" onChange={editFieldChanged}>
 								{UsageArray.map((u, i) => (
-									<option key={i} value={u}>
+									<option key={i} value={u} selected={u == emailEdit.Usage}>
 										{u}
 									</option>
 								))}
@@ -235,7 +225,7 @@ export default function EmailList({
 							<input
 								type="checkbox"
 								name="Public"
-								defaultChecked={emailEdit.Public}
+								checked={emailEdit.Public}
 								onChange={editFieldChanged}
 							/>
 							<label htmlFor="Public" className="ml-2">

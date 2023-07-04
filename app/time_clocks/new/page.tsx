@@ -1,16 +1,25 @@
 "use client";
 
 import { apiUrl } from "@/lib/api-url";
+import { buildHeaders } from "@/lib/build-headers";
 import { fetcher } from "@/lib/fetcher";
 import { getFullName } from "@/lib/get-full-name";
+import {
+  UserSessionType,
+  sessionKey,
+  useSessionStorage,
+} from "@/lib/session.storage";
 import { IssueType } from "@/types/issue.type";
 import { ProjectType } from "@/types/project.type";
 import { TimeClockType } from "@/types/time-clock.type";
 import { UserType } from "@/types/user.type";
+import { useState } from "react";
 import useSWR from "swr";
 
 export default function NewTimeClockPage() {
-  let timeClock: TimeClockType = {
+  const { getItem } = useSessionStorage();
+  const [session] = useState<UserSessionType>(getItem(sessionKey, "session"));
+  const [timeClock, setTimeClock] = useState<TimeClockType>({
     Start: {
       Date: "",
       Time: "",
@@ -22,7 +31,7 @@ export default function NewTimeClockPage() {
     ProjectId: "",
     IssueId: "",
     UserId: "",
-  };
+  });
   let issues: IssueType[] = [];
   let users: UserType[] = [];
   let projects: ProjectType[] = [];
@@ -39,6 +48,71 @@ export default function NewTimeClockPage() {
   issues = issueReq.data;
   users = userReq.data;
   projects = projectReq.data;
+
+  const selectChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    setTimeClock({
+      ...timeClock,
+      [name]: value,
+    });
+  };
+
+  const startChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    const { Start } = timeClock;
+    const newStart = {
+      ...Start,
+      [name]: value,
+    };
+    console.log("startChanged", name, value);
+    setTimeClock({
+      ...timeClock,
+      Start: newStart,
+    });
+  };
+
+  const endChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    const { End } = timeClock;
+    const newEnd = {
+      ...End,
+      [name]: value,
+    };
+    console.log("endChanged", name, value);
+    setTimeClock({
+      ...timeClock,
+      End: newEnd,
+    });
+  };
+
+  const createTimeClock = async () => {
+    const { Start, End, ProjectId, UserId, IssueId } = timeClock;
+    if (!ProjectId || !UserId || !IssueId) return;
+    const payload: any = { ProjectId, UserId, IssueId };
+    if (Start.Date && Start.Time) payload.Start = Start;
+    if (End.Date && End.Time) payload.End = End;
+    console.log({ payload });
+    const result = await fetch(`${apiUrl}/timeclock`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: buildHeaders(session),
+    });
+    if (result.ok) {
+      setTimeClock({
+        Start: {
+          Date: "",
+          Time: "",
+        },
+        End: {
+          Date: "",
+          Time: "",
+        },
+        ProjectId: "",
+        IssueId: "",
+        UserId: "",
+      });
+    }
+  };
   return (
     <div className="card">
       <h2>New Time Clock</h2>
@@ -47,10 +121,14 @@ export default function NewTimeClockPage() {
           <label htmlFor="UserId" className="block">
             User
           </label>
-          <select name="UserId" id="UserId" defaultValue={timeClock.UserId}>
+          <select name="UserId" id="UserId" onChange={selectChanged}>
             <option value="">- select -</option>
             {users.map((u) => (
-              <option key={u.UUID} value={u.Id}>
+              <option
+                key={u.UUID}
+                value={u.Id}
+                selected={String(u.Id) == timeClock.UserId}
+              >
                 {getFullName(u)}
               </option>
             ))}
@@ -60,14 +138,14 @@ export default function NewTimeClockPage() {
           <label htmlFor="ProjectId" className="block">
             Project
           </label>
-          <select
-            name="ProjectId"
-            id="ProjectId"
-            defaultValue={timeClock.ProjectId}
-          >
+          <select name="ProjectId" id="ProjectId" onChange={selectChanged}>
             <option value="">- select -</option>
             {projects.map((p) => (
-              <option key={p.UUID} value={p.Id}>
+              <option
+                key={p.UUID}
+                value={p.Id}
+                selected={String(p.Id) == timeClock.ProjectId}
+              >
                 {p.Sequence ? p.Sequence.Prefix : ""} | {p.Name}
               </option>
             ))}
@@ -77,10 +155,14 @@ export default function NewTimeClockPage() {
           <label htmlFor="IssueId" className="block">
             Issue
           </label>
-          <select name="IssueId" id="IssueId" defaultValue={timeClock.IssueId}>
+          <select name="IssueId" id="IssueId" onChange={selectChanged}>
             <option value="">- select -</option>
             {issues.map((i) => (
-              <option key={i.UUID} value={String(i.Id)}>
+              <option
+                key={i.UUID}
+                value={String(i.Id)}
+                selected={String(i.Id) == timeClock.IssueId}
+              >
                 {i.SequenceNumber} | {i.Title}
               </option>
             ))}
@@ -95,9 +177,10 @@ export default function NewTimeClockPage() {
           {timeClock.Start && (
             <input
               type="date"
-              name="StartDate"
+              name="Date"
               id="StartDate"
-              defaultValue={timeClock.Start.Date}
+              value={timeClock.Start.Date}
+              onChange={startChanged}
             />
           )}
         </div>
@@ -108,9 +191,10 @@ export default function NewTimeClockPage() {
           {timeClock.Start && (
             <input
               type="time"
-              name="StartTime"
+              name="Time"
               id="StartTime"
-              defaultValue={timeClock.Start.Time}
+              value={timeClock.Start.Time}
+              onChange={startChanged}
             />
           )}
         </div>
@@ -121,9 +205,10 @@ export default function NewTimeClockPage() {
           {timeClock.End && (
             <input
               type="date"
-              name="EndDate"
+              name="Date"
               id="EndDate"
-              defaultValue={timeClock.End.Date}
+              value={timeClock.End.Date}
+              onChange={endChanged}
             />
           )}
         </div>
@@ -134,15 +219,16 @@ export default function NewTimeClockPage() {
           {timeClock.End && (
             <input
               type="time"
-              name="EndTime"
+              name="Time"
               id="EndTime"
-              defaultValue={timeClock.End.Time}
+              value={timeClock.End.Time}
+              onChange={endChanged}
             />
           )}
         </div>
       </div>
       <div>
-        <button>Create Time Clock</button>
+        <button onClick={createTimeClock}>Create Time Clock</button>
       </div>
     </div>
   );

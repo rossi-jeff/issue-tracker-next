@@ -1,13 +1,21 @@
 "use client";
 
 import { apiUrl } from "@/lib/api-url";
+import { buildHeaders } from "@/lib/build-headers";
 import { fetcher } from "@/lib/fetcher";
 import { getFullName } from "@/lib/get-full-name";
+import { RemoveBlanks } from "@/lib/remove-blanks";
+import {
+  UserSessionType,
+  sessionKey,
+  useSessionStorage,
+} from "@/lib/session.storage";
 import { IssueType } from "@/types/issue.type";
 import { ProjectType } from "@/types/project.type";
 import { TimeClockType } from "@/types/time-clock.type";
 import { UserType } from "@/types/user.type";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import useSWR from "swr";
 
 export default function EditTimeClockPage() {
@@ -25,6 +33,22 @@ export default function EditTimeClockPage() {
     IssueId: "",
     UserId: "",
   };
+  const { getItem } = useSessionStorage();
+  const [session] = useState<UserSessionType>(getItem(sessionKey, "session"));
+  const [modified, setModified] = useState(false);
+  const [updates, setUpdates] = useState<TimeClockType>({
+    Start: {
+      Date: "",
+      Time: "",
+    },
+    End: {
+      Date: "",
+      Time: "",
+    },
+    ProjectId: "",
+    IssueId: "",
+    UserId: "",
+  });
   let issues: IssueType[] = [];
   let users: UserType[] = [];
   let projects: ProjectType[] = [];
@@ -48,6 +72,82 @@ export default function EditTimeClockPage() {
   issues = issueReq.data;
   users = userReq.data;
   projects = projectReq.data;
+
+  const selectChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    clockReq.mutate({
+      ...timeClock,
+      [name]: value,
+    });
+    setUpdates({
+      ...updates,
+      [name]: value,
+    });
+    setModified(true);
+  };
+
+  const startChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    const { Start } = updates;
+    const newStart = {
+      ...Start,
+      [name]: value,
+    };
+    console.log("startChanged", name, value);
+    timeClock.Start = newStart;
+    setUpdates({
+      ...updates,
+      Start: newStart,
+    });
+    setModified(true);
+  };
+
+  const endChanged = (ev: any) => {
+    const { name, value } = ev.target;
+    const { End } = updates;
+    const newEnd = {
+      ...End,
+      [name]: value,
+    };
+    console.log("endChanged", name, value);
+    console.log(newEnd);
+    timeClock.End = newEnd;
+    setUpdates({
+      ...updates,
+      End: newEnd,
+    });
+    setModified(true);
+  };
+
+  const updateTimeClock = async () => {
+    const { UUID } = timeClock;
+    const { Start, End, ProjectId, UserId, IssueId } = updates;
+    const payload = RemoveBlanks({ ProjectId, UserId, IssueId });
+    if (Start.Date && Start.Time) payload.Start = Start;
+    if (End.Date && End.Time) payload.End = End;
+    console.log({ payload });
+    const result = await fetch(`${apiUrl}/timeclock/${UUID}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+      headers: buildHeaders(session),
+    });
+    if (result.ok) {
+      setModified(false);
+      setUpdates({
+        Start: {
+          Date: "",
+          Time: "",
+        },
+        End: {
+          Date: "",
+          Time: "",
+        },
+        ProjectId: "",
+        IssueId: "",
+        UserId: "",
+      });
+    }
+  };
   return (
     <div className="card">
       <h2>Edit Time Clock</h2>
@@ -56,10 +156,14 @@ export default function EditTimeClockPage() {
           <label htmlFor="UserId" className="block">
             User
           </label>
-          <select name="UserId" id="UserId" defaultValue={timeClock.UserId}>
+          <select name="UserId" id="UserId" onChange={selectChanged}>
             <option value="">- select -</option>
             {users.map((u) => (
-              <option key={u.UUID} value={u.Id}>
+              <option
+                key={u.UUID}
+                value={u.Id}
+                selected={String(u.Id) == timeClock.UserId}
+              >
                 {getFullName(u)}
               </option>
             ))}
@@ -69,14 +173,14 @@ export default function EditTimeClockPage() {
           <label htmlFor="ProjectId" className="block">
             Project
           </label>
-          <select
-            name="ProjectId"
-            id="ProjectId"
-            defaultValue={timeClock.ProjectId}
-          >
+          <select name="ProjectId" id="ProjectId" onChange={selectChanged}>
             <option value="">- select -</option>
             {projects.map((p) => (
-              <option key={p.UUID} value={p.Id}>
+              <option
+                key={p.UUID}
+                value={p.Id}
+                selected={String(p.Id) == timeClock.ProjectId}
+              >
                 {p.Sequence ? p.Sequence.Prefix : ""} | {p.Name}
               </option>
             ))}
@@ -86,10 +190,14 @@ export default function EditTimeClockPage() {
           <label htmlFor="IssueId" className="block">
             Issue
           </label>
-          <select name="IssueId" id="IssueId" defaultValue={timeClock.IssueId}>
+          <select name="IssueId" id="IssueId" onChange={selectChanged}>
             <option value="">- select -</option>
             {issues.map((i) => (
-              <option key={i.UUID} value={String(i.Id)}>
+              <option
+                key={i.UUID}
+                value={String(i.Id)}
+                selected={String(i.Id) == timeClock.IssueId}
+              >
                 {i.SequenceNumber} | {i.Title}
               </option>
             ))}
@@ -104,9 +212,10 @@ export default function EditTimeClockPage() {
           {timeClock.Start && (
             <input
               type="date"
-              name="StartDate"
+              name="Date"
               id="StartDate"
-              defaultValue={timeClock.Start.Date}
+              value={timeClock.Start.Date}
+              onChange={startChanged}
             />
           )}
         </div>
@@ -117,9 +226,10 @@ export default function EditTimeClockPage() {
           {timeClock.Start && (
             <input
               type="time"
-              name="StartTime"
+              name="Time"
               id="StartTime"
-              defaultValue={timeClock.Start.Time}
+              value={timeClock.Start.Time}
+              onChange={startChanged}
             />
           )}
         </div>
@@ -130,9 +240,10 @@ export default function EditTimeClockPage() {
           {timeClock.End && (
             <input
               type="date"
-              name="EndDate"
+              name="Date"
               id="EndDate"
-              defaultValue={timeClock.End.Date}
+              value={timeClock.End.Date}
+              onChange={endChanged}
             />
           )}
         </div>
@@ -143,15 +254,18 @@ export default function EditTimeClockPage() {
           {timeClock.End && (
             <input
               type="time"
-              name="EndTime"
+              name="Time"
               id="EndTime"
-              defaultValue={timeClock.End.Time}
+              value={timeClock.End.Time}
+              onChange={endChanged}
             />
           )}
         </div>
       </div>
       <div>
-        <button>Update Time Clock</button>
+        {modified && (
+          <button onClick={updateTimeClock}>Update Time Clock</button>
+        )}
       </div>
     </div>
   );

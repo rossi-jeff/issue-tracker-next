@@ -186,7 +186,6 @@ export default function NewUserPage() {
 				updateUserAttr={updateUserAttr}
 			/>
 			<button onClick={registerUser}>Register User</button>
-			<div>{JSON.stringify(user)}</div>
 		</div>
 	)
 }

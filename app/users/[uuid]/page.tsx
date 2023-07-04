@@ -20,7 +20,7 @@ export default function EditUserPage() {
 	const { uuid } = useParams()
 	const { getItem } = useSessionStorage()
 	const [session] = useState<UserSessionType>(getItem(sessionKey, 'session'))
-	const [updated, setUpdated] = useState(false)
+	const [modified, setModified] = useState(false)
 	let user: UserType = {
 		Credentials: {
 			Username: '',
@@ -165,7 +165,7 @@ export default function EditUserPage() {
 		user.Credentials = Credentials
 		user.Roles = Roles
 		userReq.mutate(user)
-		setUpdated(true)
+		setModified(true)
 	}
 
 	const updateUser = async () => {
@@ -178,7 +178,7 @@ export default function EditUserPage() {
 		if (result.ok) {
 			const updated = await result.json()
 			userReq.mutate(updated)
-			setUpdated(false)
+			setModified(false)
 		}
 	}
 	return (
@@ -195,8 +195,7 @@ export default function EditUserPage() {
 				deletePhone={deletePhone}
 				updateUserAttr={updateUserAttr}
 			/>
-			{updated && <button onClick={updateUser}>Update User</button>}
-			<div>{JSON.stringify(user)}</div>
+			{modified && <button onClick={updateUser}>Update User</button>}
 		</div>
 	)
 }

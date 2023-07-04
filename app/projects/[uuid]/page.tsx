@@ -3,6 +3,7 @@
 import { apiUrl } from "@/lib/api-url";
 import { buildHeaders } from "@/lib/build-headers";
 import { fetcher } from "@/lib/fetcher";
+import { RemoveBlanks } from "@/lib/remove-blanks";
 import {
   UserSessionType,
   sessionKey,
@@ -17,7 +18,11 @@ export default function EditProjectPage() {
   const { uuid } = useParams();
   const { getItem } = useSessionStorage();
   const [session] = useState<UserSessionType>(getItem(sessionKey, "session"));
-  const [updated, setUpdated] = useState(false);
+  const [modified, setModified] = useState(false);
+  const [updates, setUpdates] = useState<ProjectType>({
+    Name: "",
+    Details: "",
+  });
   let project: ProjectType = {
     Name: "",
     Details: "",
@@ -31,24 +36,26 @@ export default function EditProjectPage() {
 
   const fieldChanged = (ev: any) => {
     const { name, value } = ev.target;
-    projectReq.mutate({
-      ...project,
+    setUpdates({
+      ...updates,
       [name]: value,
     });
-    setUpdated(true);
+    setModified(true);
   };
 
   const updateProject = async () => {
-    const { Name, Details, UUID } = project;
+    const { UUID } = project;
+    const { Name, Details } = updates;
+    const payload = RemoveBlanks({ Name, Details });
     const result = await fetch(`${apiUrl}/project/${UUID}`, {
       method: "PATCH",
-      body: JSON.stringify({ Name, Details }),
+      body: JSON.stringify(payload),
       headers: buildHeaders(session),
     });
     if (result.ok) {
       const data = await result.json();
       projectReq.mutate(data);
-      setUpdated(false);
+      setModified(false);
     }
   };
   return (
@@ -79,7 +86,7 @@ export default function EditProjectPage() {
           onChange={fieldChanged}
         ></textarea>
       </div>
-      {updated && (
+      {modified && (
         <div>
           <button onClick={updateProject}>Update Project</button>
         </div>

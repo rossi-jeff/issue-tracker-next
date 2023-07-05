@@ -20,13 +20,25 @@ h3 {
 
 input,
 select,
-textarea {
+textarea,
+.card button,
+.modal-fit button {
 	@apply px-2 py-1 border text-sm rounded bg-light text-dark border-dark;
 }
 
 label,
-strong {
+strong,
+a {
 	@apply font-bold text-accent;
+}
+
+ul {
+	@apply list-disc list-inside ml-2 mb-4;
+}
+
+a:hover,
+button:hover {
+	@apply underline;
 }
 
 #top-bar,

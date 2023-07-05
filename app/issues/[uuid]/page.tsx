@@ -22,6 +22,7 @@ import {
   sessionKey,
   useSessionStorage,
 } from "../../../lib/session.storage";
+import LoadingIndicator from "@/app/loading-indicator";
 
 export default function EditIssuePage() {
   const { uuid } = useParams();
@@ -57,7 +58,7 @@ export default function EditIssuePage() {
   const userReq = useSWR(`${apiUrl}/user`, fetcher);
   const projectReq = useSWR(`${apiUrl}/project`, fetcher);
   if (issueReq.isLoading || userReq.isLoading || projectReq.isLoading)
-    return <div>Loading...</div>;
+    return <LoadingIndicator />;
   if (issueReq.error || userReq.error || projectReq.error)
     return <div>Error</div>;
 

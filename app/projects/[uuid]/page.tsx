@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingIndicator from "@/app/loading-indicator";
 import { apiUrl } from "@/lib/api-url";
 import { buildHeaders } from "@/lib/build-headers";
 import { fetcher } from "@/lib/fetcher";
@@ -29,7 +30,7 @@ export default function EditProjectPage() {
   };
   const projectReq = useSWR(uuid ? `${apiUrl}/project/${uuid}` : null, fetcher);
 
-  if (projectReq.isLoading) return <div>Loading</div>;
+  if (projectReq.isLoading) return <LoadingIndicator />;
   if (projectReq.error) return <div>Error</div>;
 
   project = projectReq.data;

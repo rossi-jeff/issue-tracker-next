@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingIndicator from "@/app/loading-indicator";
 import { apiUrl } from "@/lib/api-url";
 import { buildHeaders } from "@/lib/build-headers";
 import { fetcher } from "@/lib/fetcher";
@@ -64,7 +65,7 @@ export default function EditTimeClockPage() {
     issueReq.isLoading ||
     projectReq.isLoading
   )
-    return <div>Loading...</div>;
+    return <LoadingIndicator />;
   if (clockReq.error || userReq.error || issueReq.error || projectReq.error)
     return <div>Error</div>;
 

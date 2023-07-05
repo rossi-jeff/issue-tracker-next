@@ -3,6 +3,7 @@ import { IssueType } from '@/types/issue.type'
 import { ProjectType } from '@/types/project.type'
 import { UserType } from '@/types/user.type'
 import { useState } from 'react'
+import { FiFilter, FiRefreshCcw } from 'react-icons/fi'
 
 export default function TimeClockFilter({
 	users,
@@ -93,7 +94,12 @@ export default function TimeClockFilter({
 
 	return (
 		<div className="card" id="time-clock-filter">
-			<button onClick={toggle}>Filter</button>
+			<button onClick={toggle} className="flex">
+				<span className="mr-1 mt-1">
+					<FiFilter />
+				</span>
+				Filter
+			</button>
 			<div className="filter-content" id="time-clock-filter-content">
 				<div className="flex flex-wrap justify-between">
 					<div>
@@ -173,7 +179,12 @@ export default function TimeClockFilter({
 					</div>
 					<div>
 						<label>&nbsp;</label>
-						<button onClick={clearFilters}>Clear Filters</button>
+						<button onClick={clearFilters} className="flex">
+							Clear Filters
+							<span className="ml-1 mt-1">
+								<FiRefreshCcw />
+							</span>
+						</button>
 					</div>
 				</div>
 			</div>

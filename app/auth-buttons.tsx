@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { CredentialsType } from '../types/credentials.type'
 import { apiUrl } from '../lib/api-url'
 import Link from 'next/link'
+import { FiLogIn, FiLogOut, FiUser } from 'react-icons/fi'
 
 export default function AuthButtons() {
 	const router = useRouter()
@@ -85,17 +86,30 @@ export default function AuthButtons() {
 		}
 	}
 	return (
-		<div className="mx-4 flex flex-wrap">
+		<div className="flex flex-wrap justify-end mb-2">
 			{session.signedIn ? (
-				<div>
-					<Link href={'/users/' + session.UUID} className="mr-4">
+				<div className="flex">
+					<Link href={'/users/' + session.UUID} className="mr-4 flex">
+						<span className="mr-1 mt-1">
+							<FiUser />
+						</span>
 						{session.UserName}
 					</Link>
-					<button onClick={signOut}>Sign Out</button>
+					<button onClick={signOut} className="flex">
+						Sign Out
+						<span className="ml-1 mt-1">
+							<FiLogOut />
+						</span>
+					</button>
 				</div>
 			) : (
 				<div>
-					<button onClick={showSignIn}>Sign In</button>
+					<button onClick={showSignIn} className="flex">
+						<span className="mr-1 mt-1">
+							<FiLogIn />
+						</span>
+						Sign In
+					</button>
 				</div>
 			)}
 			<div className="modal-overlay" id="sign-in-overlay">

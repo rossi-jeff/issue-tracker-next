@@ -67,7 +67,7 @@ export default function UserForm({
 	}
 	return (
 		<div id="user-form">
-			<div className="flex flex-wrap justify-between">
+			<div className="flex flex-wrap justify-between mb-4">
 				<div>
 					<label htmlFor="Username" className="block">
 						Username
@@ -99,7 +99,7 @@ export default function UserForm({
 					</div>
 				)}
 			</div>
-			<div className="flex flex-wrap justify-between">
+			<div className="flex flex-wrap justify-between mb-4">
 				<div>
 					<label htmlFor="First" className="block">
 						First
@@ -143,7 +143,7 @@ export default function UserForm({
 					)}
 				</div>
 			</div>
-			<div className="flex flex-wrap justify-between">
+			<div className="flex flex-wrap justify-between mb-4">
 				{UserRoleArray.map((role, idx) => (
 					<div key={idx}>
 						<input

@@ -13,6 +13,7 @@ import {
 	useSessionStorage,
 } from '../../lib/session.storage'
 import Link from 'next/link'
+import { FiPlusCircle, FiTool } from 'react-icons/fi'
 
 export default function ProjectsPage() {
 	const { getItem } = useSessionStorage()
@@ -38,10 +39,16 @@ export default function ProjectsPage() {
 	return (
 		<div>
 			<div className="flex flex-wrap">
+				<span className="mt-1 mr-1">
+					<FiTool size="1.5em" />
+				</span>
 				<h1>Projects</h1>
 				{session.signedIn && (
-					<Link href="/projects/new" className="ml-4">
+					<Link href="/projects/new" className="ml-4 mt-1 flex">
 						New Project
+						<span className="ml-1 mt-1">
+							<FiPlusCircle />
+						</span>
 					</Link>
 				)}
 			</div>

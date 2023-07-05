@@ -13,6 +13,7 @@ import {
 import { useState } from 'react'
 import { buildHeaders } from '../../lib/build-headers'
 import { OtherStatusArray } from '../../types/array.types'
+import { FiGrid } from 'react-icons/fi'
 
 export default function DashboardPage() {
 	const { getItem } = useSessionStorage()
@@ -216,7 +217,12 @@ export default function DashboardPage() {
 
 	return (
 		<div>
-			<h1>Dashboard</h1>
+			<div className="flex flex-wrap">
+				<span className="mr-1 mt-1">
+					<FiGrid size="1.5em" />
+				</span>
+				<h1>Dashboard</h1>
+			</div>
 			<div className="flex flex-wrap justify-between">
 				<div className="w-[23%]">
 					<h2>New</h2>

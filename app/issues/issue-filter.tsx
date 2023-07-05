@@ -7,6 +7,7 @@ import {
 } from '@/types/array.types'
 import { UserType } from '@/types/user.type'
 import { useState } from 'react'
+import { FiFilter, FiRefreshCcw } from 'react-icons/fi'
 
 export default function IssueFilter({
 	users,
@@ -85,7 +86,12 @@ export default function IssueFilter({
 	}
 	return (
 		<div className="card" id="issue-filter">
-			<button onClick={toggle}>Filter</button>
+			<button onClick={toggle} className="flex">
+				<span className="mr-1 mt-1">
+					<FiFilter />
+				</span>
+				Filter
+			</button>
 			<div className="filter-content" id="issue-filter-content">
 				<div className="flex flex-wrap justify-between">
 					<div>
@@ -192,7 +198,12 @@ export default function IssueFilter({
 					</div>
 					<div>
 						<label>&nbsp;</label>
-						<button onClick={clearFilters}>Clear Filters</button>
+						<button onClick={clearFilters} className="flex">
+							Clear Filters
+							<span className="ml-1 mt-1">
+								<FiRefreshCcw />
+							</span>
+						</button>
 					</div>
 				</div>
 			</div>

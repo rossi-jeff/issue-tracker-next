@@ -86,9 +86,9 @@ export default function AuthButtons() {
 		}
 	}
 	return (
-		<div className="mx-4 flex flex-wrap">
+		<div className="flex flex-wrap justify-end mb-2">
 			{session.signedIn ? (
-				<div className='flex'>
+				<div className="flex">
 					<Link href={'/users/' + session.UUID} className="mr-4 flex">
 						<span className="mr-1 mt-1">
 							<FiUser />

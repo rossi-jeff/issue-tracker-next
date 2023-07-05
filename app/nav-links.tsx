@@ -19,7 +19,7 @@ export default function NavLinks() {
 		{ path: '/time_clocks', text: 'Time Clocks', icon: <FiClock /> },
 	]
 	return (
-		<div className="flex flex-wrap justify-between mx-4">
+		<div className="flex flex-wrap justify-between">
 			<Link href="/" className="flex">
 				<span className="mr-1 mt-1">
 					<FiHome />

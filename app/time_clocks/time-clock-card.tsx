@@ -1,13 +1,24 @@
+"use client";
+
 import { formatClock } from "@/lib/format-clock";
 import { getFullName } from "@/lib/get-full-name";
 import { getTimeClockHours } from "@/lib/get-time-clock-hours";
+import {
+  UserSessionType,
+  sessionKey,
+  useSessionStorage,
+} from "@/lib/session.storage";
 import { TimeClockType } from "@/types/time-clock.type";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function TimeClockCard({
   timeClock,
 }: {
   timeClock: TimeClockType;
 }) {
+  const { getItem } = useSessionStorage();
+  const [session] = useState<UserSessionType>(getItem(sessionKey, "session"));
   const user = timeClock.User ? getFullName(timeClock.User) : "N/A";
   const project = timeClock.Project ? timeClock.Project.Name : "N/A";
   const issue = timeClock.Issue ? timeClock.Issue.SequenceNumber : "N/A";
@@ -23,6 +34,9 @@ export default function TimeClockCard({
   const hours = getTimeClockHours(timeClock);
   return (
     <div className="card" id={"time-clock-" + timeClock.UUID}>
+      {session.signedIn && (
+        <Link href={"/time_clocks/" + timeClock.UUID}>Edit</Link>
+      )}
       <div className="flex flex-wrap justify-between">
         <div>
           <strong>User</strong>

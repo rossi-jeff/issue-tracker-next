@@ -1,45 +1,61 @@
-"use client";
+'use client'
 
-import useSWR from "swr";
-import { fetcher } from "../../lib/fetcher";
-import { apiUrl } from "../../lib/api-url";
-import { ProjectType } from "@/types/project.type";
-import ProjectCard from "./project-card";
-import { useState } from "react";
-import PaginationControls from "../pagination-controls";
+import useSWR from 'swr'
+import { fetcher } from '../../lib/fetcher'
+import { apiUrl } from '../../lib/api-url'
+import { ProjectType } from '@/types/project.type'
+import ProjectCard from './project-card'
+import { useState } from 'react'
+import PaginationControls from '../pagination-controls'
+import {
+	UserSessionType,
+	sessionKey,
+	useSessionStorage,
+} from '../../lib/session.storage'
+import Link from 'next/link'
 
 export default function ProjectsPage() {
-  const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState(0);
+	const { getItem } = useSessionStorage()
+	const [session] = useState<UserSessionType>(getItem(sessionKey, 'session'))
+	const [limit, setLimit] = useState(10)
+	const [offset, setOffset] = useState(0)
 
-  const { data, error, isLoading } = useSWR(`${apiUrl}/project`, fetcher);
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+	const { data, error, isLoading } = useSWR(`${apiUrl}/project`, fetcher)
+	if (isLoading) return <div>Loading...</div>
+	if (error) return <div>{error}</div>
 
-  const projects: ProjectType[] = data;
+	const projects: ProjectType[] = data
 
-  const pageChanged = (newPage: number) => {
-    setOffset((newPage - 1) * limit);
-  };
+	const pageChanged = (newPage: number) => {
+		setOffset((newPage - 1) * limit)
+	}
 
-  const limitChanged = (newLimit: number) => {
-    setLimit(newLimit);
-    setOffset(0);
-  };
+	const limitChanged = (newLimit: number) => {
+		setLimit(newLimit)
+		setOffset(0)
+	}
 
-  return (
-    <div>
-      <h1>Projects</h1>
-      {projects.slice(offset, offset + limit).map((project) => (
-        <ProjectCard key={project.Id} project={project} />
-      ))}
-      <PaginationControls
-        offset={offset}
-        limit={limit}
-        count={projects.length}
-        pageChanged={pageChanged}
-        limitChanged={limitChanged}
-      />
-    </div>
-  );
+	return (
+		<div>
+			<div className="flex flex-wrap">
+				<h1>Projects</h1>
+				{session.signedIn && (
+					<Link href="/projects/new" className="ml-4">
+						New Project
+					</Link>
+				)}
+			</div>
+
+			{projects.slice(offset, offset + limit).map((project) => (
+				<ProjectCard key={project.Id} project={project} />
+			))}
+			<PaginationControls
+				offset={offset}
+				limit={limit}
+				count={projects.length}
+				pageChanged={pageChanged}
+				limitChanged={limitChanged}
+			/>
+		</div>
+	)
 }

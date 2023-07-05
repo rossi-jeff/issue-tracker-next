@@ -7,8 +7,16 @@ import { UserType } from "@/types/user.type";
 import UserCard from "./user-card";
 import { useState } from "react";
 import PaginationControls from "../pagination-controls";
+import {
+  UserSessionType,
+  sessionKey,
+  useSessionStorage,
+} from "../../lib/session.storage";
+import Link from "next/link";
 
 export default function UsersPage() {
+  const { getItem } = useSessionStorage();
+  const [session] = useState<UserSessionType>(getItem(sessionKey, "session"));
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
 
@@ -30,7 +38,14 @@ export default function UsersPage() {
   };
   return (
     <div>
-      <h1>Users</h1>
+      <div className="flex flex-wrap">
+        <h1>Users</h1>
+        {session.signedIn && (
+          <Link href="/users/new" className="ml-4">
+            New User
+          </Link>
+        )}
+      </div>
       {users.slice(offset, offset + limit).map((user) => (
         <UserCard key={user.Id} user={user} />
       ))}

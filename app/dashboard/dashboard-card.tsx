@@ -1,7 +1,17 @@
 import { getFullName } from '../../lib/get-full-name'
 import { IssueType } from '../../types/issue.type'
 
-export default function DashboardCard({ issue }: { issue: IssueType }) {
+export default function DashboardCard({
+	issue,
+	from,
+	draggable,
+	dragStart,
+}: {
+	issue: IssueType
+	from: string
+	draggable: boolean
+	dragStart: Function
+}) {
 	const author = issue.Author ? getFullName(issue.Author) : 'N/A'
 	const assignedTo = issue.AssignedTo ? getFullName(issue.AssignedTo) : 'N/A'
 	const project = issue.Project ? issue.Project.Name : 'N/A'
@@ -15,7 +25,7 @@ export default function DashboardCard({ issue }: { issue: IssueType }) {
 		toggle(`dashboard-issue-content-${issue.UUID}`)
 	}
 
-	const toggleeDescription = () => {
+	const toggleDescription = () => {
 		toggle(`dashboard-issue-description-${issue.UUID}`)
 	}
 
@@ -23,15 +33,22 @@ export default function DashboardCard({ issue }: { issue: IssueType }) {
 		toggle(`dashboard-issue-details-${issue.UUID}`)
 	}
 
+	const handleDragStart = (ev: any) => dragStart(ev)
+
 	return (
-		<div className="card" id={'issue-' + issue.UUID}>
+		<div
+			className="card"
+			id={from + '_' + issue.UUID}
+			draggable={draggable}
+			onDragStart={handleDragStart}
+		>
 			<button onClick={toggleContent}>{issue.SequenceNumber}</button>
 			<div
 				className="dashboard-issue-content"
 				id={'dashboard-issue-content-' + issue.UUID}
 			>
 				<div>{issue.Title}</div>
-				<button onClick={toggleeDescription}>Description</button>
+				<button onClick={toggleDescription}>Description</button>
 				<div
 					className="dashboard-issue-description"
 					id={'dashboard-issue-description-' + issue.UUID}

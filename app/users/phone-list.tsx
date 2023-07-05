@@ -3,6 +3,7 @@
 import { PhoneTypeArray, UsageArray } from '@/types/array.types'
 import { PhoneType } from '@/types/phone.type'
 import { useState } from 'react'
+import { FiEdit, FiPlusCircle, FiTrash2, FiPhone } from 'react-icons/fi'
 
 export default function PhoneList({
 	phones,
@@ -137,24 +138,44 @@ export default function PhoneList({
 		hideOverlay()
 	}
 	return (
-		<div>
-			<div className="flex flex-wrap">
+		<div className="mb-4">
+			<div className="flex flex-wrap mb-0">
+				<span className="mr-1 mt-1">
+					<FiPhone />
+				</span>
 				<h3>Phones</h3>
-				<button onClick={showNew} className="ml-4">
+				<button onClick={showNew} className="ml-4 flex mt-1">
 					New Phone
+					<span className="ml-1 mt-1">
+						<FiPlusCircle />
+					</span>
 				</button>
 			</div>
+			{phones.length > 0 && (
+				<div className="phone-list-header">
+					<div className="w-8">&nbsp;</div>
+					<div className="w-64">Number</div>
+					<div className="w-16">Type</div>
+					<div className="w-16">Usage</div>
+					<div className="w-16">Public</div>
+					<div className="w-8">&nbsp;</div>
+				</div>
+			)}
 			{phones.map((phone, i) => (
-				<div key={phone.UUID || i} className="flex flex-wrap justify-between">
-					<div>
-						<button onClick={() => editPhone(phone.UUID || '')}>Edit</button>
+				<div key={phone.UUID || i} className="phone-list-row">
+					<div className="w-8">
+						<button onClick={() => editPhone(phone.UUID || '')}>
+							<FiEdit />
+						</button>
 					</div>
-					<div>{phone.Number}</div>
-					<div>{phone.Type}</div>
-					<div>{phone.Usage}</div>
-					<div>{phone.Public ? 'Yes' : 'No'}</div>
-					<div>
-						<button onClick={() => deletePhone(phone.UUID)}>Delete</button>
+					<div className="w-64">{phone.Number}</div>
+					<div className="w-16">{phone.Type}</div>
+					<div className="w-16">{phone.Usage}</div>
+					<div className="w-16">{phone.Public ? 'Yes' : 'No'}</div>
+					<div className="w-8 text-right">
+						<button onClick={() => deletePhone(phone.UUID)}>
+							<FiTrash2 />
+						</button>
 					</div>
 				</div>
 			))}

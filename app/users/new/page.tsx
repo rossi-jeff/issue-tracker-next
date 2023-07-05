@@ -12,6 +12,7 @@ import {
 	useSessionStorage,
 } from '../../../lib/session.storage'
 import { apiUrl } from '../../../lib/api-url'
+import { FiUser } from 'react-icons/fi'
 
 export default function NewUserPage() {
 	const { getItem } = useSessionStorage()
@@ -173,7 +174,12 @@ export default function NewUserPage() {
 	}
 	return (
 		<div className="card">
-			<h2>New User</h2>
+			<div className="flex">
+				<span className="mr-2 mt-1">
+					<FiUser size="1.2em" />
+				</span>
+				<h2>New User</h2>
+			</div>
 			<UserForm
 				user={user}
 				showPass={true}

@@ -81,3 +81,13 @@ strong {
 .modal-fit.open {
 	@apply block;
 }
+
+.email-list-row,
+.phone-list-row {
+	@apply flex flex-wrap justify-between border-b border-dark border-dotted py-1;
+}
+
+.phone-list-header,
+.email-list-header {
+	@apply flex flex-wrap justify-between bg-dark text-light font-bold rounded;
+}

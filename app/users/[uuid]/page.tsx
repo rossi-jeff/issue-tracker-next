@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { buildHeaders } from '../../../lib/build-headers'
 import { EmailType } from '../../../types/email.type'
 import { PhoneType } from '../../../types/phone.type'
+import { FiUser } from 'react-icons/fi'
 
 export default function EditUserPage() {
 	const { uuid } = useParams()
@@ -183,7 +184,12 @@ export default function EditUserPage() {
 	}
 	return (
 		<div className="card">
-			<h2>Edit User</h2>
+			<div className="flex">
+				<span className="mr-2 mt-1">
+					<FiUser size="1.2em" />
+				</span>
+				<h2>Edit User</h2>
+			</div>
 			<UserForm
 				user={user}
 				showPass={false}

@@ -3,6 +3,7 @@
 import { UsageArray } from '@/types/array.types'
 import { EmailType } from '@/types/email.type'
 import { useState } from 'react'
+import { FiEdit, FiPlusCircle, FiTrash2, FiMail } from 'react-icons/fi'
 
 export default function EmailList({
 	emails,
@@ -131,23 +132,42 @@ export default function EmailList({
 		hideOverlay()
 	}
 	return (
-		<div>
+		<div className="mb-4">
 			<div className="flex flex-wrap">
+				<span className="mr-1 mt-1">
+					<FiMail />
+				</span>
 				<h3>Emails</h3>
-				<button onClick={showNew} className="ml-4">
+				<button onClick={showNew} className="ml-4 flex mt-1">
 					New Email
+					<span className="ml-1 mt-1">
+						<FiPlusCircle />
+					</span>
 				</button>
 			</div>
+			{emails.length > 0 && (
+				<div className="email-list-header">
+					<div className="w-8">&nbsp;</div>
+					<div className="w-64">Address</div>
+					<div className="w-16">Usage</div>
+					<div className="w-16">Public</div>
+					<div className="w-8">&nbsp;</div>
+				</div>
+			)}
 			{emails.map((email, i) => (
-				<div key={email.UUID || i} className="flex flex-wrap justify-between">
-					<div>
-						<button onClick={() => editEmail(email.UUID || '')}>Edit</button>
+				<div key={email.UUID || i} className="email-list-row">
+					<div className="w-8">
+						<button onClick={() => editEmail(email.UUID || '')}>
+							<FiEdit />
+						</button>
 					</div>
-					<div>{email.Address}</div>
-					<div>{email.Usage}</div>
-					<div>{email.Public ? 'Yes' : 'No'}</div>
-					<div>
-						<button onClick={() => deleteEmail(email.UUID)}>Delete</button>
+					<div className="w-64">{email.Address}</div>
+					<div className="w-16">{email.Usage}</div>
+					<div className="w-16">{email.Public ? 'Yes' : 'No'}</div>
+					<div className="w-8 text-right">
+						<button onClick={() => deleteEmail(email.UUID)}>
+							<FiTrash2 />
+						</button>
 					</div>
 				</div>
 			))}

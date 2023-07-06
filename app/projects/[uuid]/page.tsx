@@ -13,6 +13,7 @@ import {
 import { ProjectType } from "@/types/project.type";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { FiTool } from "react-icons/fi";
 import useSWR from "swr";
 
 export default function EditProjectPage() {
@@ -61,7 +62,12 @@ export default function EditProjectPage() {
   };
   return (
     <div className="card">
-      <h2>Edit Project</h2>
+      <div className="flex">
+        <span className="mr-1">
+          <FiTool size="1.5em" />
+        </span>
+        <h2>Edit Project</h2>
+      </div>
       <div>
         <label htmlFor="Name" className="block">
           Name

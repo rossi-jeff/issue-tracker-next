@@ -14,6 +14,7 @@ import { ProjectType } from "@/types/project.type";
 import { TimeClockType } from "@/types/time-clock.type";
 import { UserType } from "@/types/user.type";
 import { useState } from "react";
+import { FiClock } from "react-icons/fi";
 import useSWR from "swr";
 
 export default function NewTimeClockPage() {
@@ -115,8 +116,13 @@ export default function NewTimeClockPage() {
   };
   return (
     <div className="card">
-      <h2>New Time Clock</h2>
-      <div className="flex flex-wrap justify-between">
+      <div className="flex">
+        <span className="mr-1">
+          <FiClock size="1.5em" />
+        </span>
+        <h2>New Time Clock</h2>
+      </div>
+      <div className="flex flex-wrap justify-between mb-4">
         <div>
           <label htmlFor="UserId" className="block">
             User
@@ -169,7 +175,7 @@ export default function NewTimeClockPage() {
           </select>
         </div>
       </div>
-      <div className="flex flex-wrap justify-between">
+      <div className="flex flex-wrap justify-between mb-4">
         <div>
           <label htmlFor="StartDate" className="block">
             Start Date

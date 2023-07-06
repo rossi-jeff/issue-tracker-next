@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { FiHome } from "react-icons/fi";
+
+export const metadata: Metadata = {
+  title: "Issue Tracker by Jeff Rossi",
+};
 
 export default function Home() {
   return (

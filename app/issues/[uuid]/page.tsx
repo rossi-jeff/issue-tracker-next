@@ -23,6 +23,7 @@ import {
   useSessionStorage,
 } from "../../../lib/session.storage";
 import LoadingIndicator from "@/app/loading-indicator";
+import { FiList } from "react-icons/fi";
 
 export default function EditIssuePage() {
   const { uuid } = useParams();
@@ -125,8 +126,13 @@ export default function EditIssuePage() {
 
   return (
     <div className="card">
-      <h2>Edit Issue {issue.SequenceNumber}</h2>
-      <div>
+      <div className="flex">
+        <span className="mr-1">
+          <FiList size="1.5em" />
+        </span>
+        <h2>Edit Issue {issue.SequenceNumber}</h2>
+      </div>
+      <div className="mb-4">
         <label htmlFor="ProjectId" className="block">
           Project
         </label>
@@ -143,7 +149,7 @@ export default function EditIssuePage() {
           ))}
         </select>
       </div>
-      <div>
+      <div className="mb-4">
         <label htmlFor="Title" className="block">
           Title
         </label>
@@ -156,7 +162,7 @@ export default function EditIssuePage() {
           onChange={fieldChanged}
         />
       </div>
-      <div>
+      <div className="mb-4">
         <label htmlFor="Details" className="block">
           Details
         </label>
@@ -168,7 +174,7 @@ export default function EditIssuePage() {
           onChange={fieldChanged}
         ></textarea>
       </div>
-      <div className="flex flex-wrap justify-between">
+      <div className="flex flex-wrap justify-between mb-4">
         <div>
           <label htmlFor="Priority" className="block">
             Priority
@@ -222,7 +228,7 @@ export default function EditIssuePage() {
           </select>
         </div>
       </div>
-      <div>
+      <div className="mb-4">
         <label htmlFor="AssignedToId" className="block">
           Assigned To
         </label>

@@ -138,7 +138,7 @@ export default function AuthButtons() {
 							onChange={fieldChanged}
 						/>
 					</div>
-					<div className="flex flex-wrap justify-between">
+					<div className="flex flex-wrap justify-between mt-2">
 						<button onClick={hideSignIn}>Cancel</button>
 						<button onClick={signIn}>Sign In</button>
 					</div>

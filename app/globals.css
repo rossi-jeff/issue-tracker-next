@@ -3,91 +3,107 @@
 @tailwind utilities;
 
 body {
-	@apply bg-light text-dark;
+  @apply bg-light text-dark;
 }
 
 h1 {
-	@apply font-extrabold text-2xl mb-2 text-accent;
+  @apply font-extrabold text-2xl mb-2 text-accent;
 }
 
 h2 {
-	@apply font-bold text-xl mb-2  text-altDark;
+  @apply font-bold text-xl mb-2  text-altDark;
 }
 
 h3 {
-	@apply font-bold text-lg mb-2;
+  @apply font-bold text-lg mb-2;
 }
 
 input,
 select,
-textarea {
-	@apply px-2 py-1 border text-sm rounded bg-light text-dark border-dark;
+textarea,
+.card button,
+.modal-fit button {
+  @apply px-2 py-1 border text-sm rounded bg-light text-dark border-dark;
 }
 
 label,
-strong {
-	@apply font-bold text-accent;
+strong,
+a {
+  @apply font-bold text-accent;
+}
+
+ul {
+  @apply list-disc list-inside ml-2 mb-4;
+}
+
+a:hover,
+button:hover {
+  @apply underline;
 }
 
 #top-bar,
 #bottom-bar {
-	@apply my-2 mx-4 bg-dark text-light border-altDark p-2 rounded;
+  @apply my-2 mx-4 bg-dark text-light border-altDark p-2 rounded;
 }
 
 .card {
-	@apply border bg-altLight border-altDark rounded p-2 mb-2;
+  @apply border bg-altLight border-altDark rounded p-2 mb-2;
 }
 
 .dashboard-column {
-	@apply max-h-96 overflow-y-auto;
+  @apply max-h-96 overflow-y-auto;
 }
 
 .dashboard-issue-content,
 .dashboard-issue-description,
 .dashboard-issue-details,
 .filter-content {
-	@apply m-2 transition hidden;
+  @apply m-2 transition hidden;
 }
 
 .dashboard-issue-content.open,
 .dashboard-issue-description.open,
 .dashboard-issue-details.open,
 .filter-content.open {
-	@apply block;
+  @apply block;
 }
 
 .dashboard-column .card button {
-	@apply block w-full bg-dark text-light font-bold text-left px-2 py-1;
+  @apply block w-full bg-dark text-light font-bold text-left px-2 py-1;
 }
 
 .dashboard-column .card .dashboard-issue-content button {
-	@apply mt-2;
+  @apply mt-2;
 }
 
 #issue-filter label,
 #time-clock-filter label {
-	@apply font-bold block;
+  @apply font-bold block;
 }
 
 .modal-overlay {
-	@apply fixed inset-0 bg-dark bg-opacity-70 overflow-y-auto w-full h-full hidden;
+  @apply fixed inset-0 bg-dark bg-opacity-70 overflow-y-auto w-full h-full hidden;
 }
 
 .modal-fit {
-	@apply max-w-fit border bg-altLight border-altDark p-2 mx-auto hidden relative top-24 rounded;
+  @apply max-w-fit border bg-altLight border-altDark p-2 mx-auto hidden relative top-24 rounded;
+}
+
+#loading-dialog {
+  @apply max-w-fit mx-auto relative top-24 text-accent;
 }
 
 .modal-overlay.open,
 .modal-fit.open {
-	@apply block;
+  @apply block;
 }
 
 .email-list-row,
 .phone-list-row {
-	@apply flex flex-wrap justify-between border-b border-dark border-dotted py-1;
+  @apply flex flex-wrap justify-between border-b border-dark border-dotted py-1;
 }
 
 .phone-list-header,
 .email-list-header {
-	@apply flex flex-wrap justify-between bg-dark text-light font-bold rounded;
+  @apply flex flex-wrap justify-between bg-dark text-light font-bold rounded;
 }
